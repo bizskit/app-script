@@ -1,0 +1,142 @@
+<script>
+  // document.getElementById('form2').style.display = 'none';
+  // document.getElementById('form1').style.display = 'none';
+
+  // function showAddForm(){
+  //   document.getElementById('form1').style.display = 'block';
+  //   document.getElementById('example').style.display = 'none';
+  // }
+
+  // function showTable(){
+  //   document.getElementById('form1').style.display = 'none';
+  //   document.getElementById('example').style.display = 'block';
+  // }
+
+ 
+
+  function searchUser(obj){
+    event.preventDefault();
+    google.script.run.withSuccessHandler(function(res) {
+      if(res != null){
+        console.log('res')
+        // $('#staticBackdrop').modal('show')
+        document.getElementById('form2').style.display = 'block';
+
+        uid = res[0]
+        document.getElementById('edit_id').value = res[0]
+        document.getElementById('edit_cid').value = res[1]
+        document.getElementById('edit_name').value = res[2]
+        document.getElementById('edit_phone').value = res[3]
+        document.getElementById('edit_date').value = res[4]
+        document.getElementById('edit_status').value = res[5]
+        document.getElementById('edit_role').value = res[6]
+      }else{
+        console.log('ไม่พบข้อมูล')
+        Swal.fire({title:'...รอสักครู่'})
+        Swal.showLoading()
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "ไม่พบข้อมูล",
+          showConfirmButton: false,
+          timer:1500
+        });
+        document.getElementById('form2').style.display = 'none';
+      }
+      document.getElementById('searchForm').reset()
+    }).findUser(obj);
+  }
+
+  window.submitForm1 = function(obj) {
+    Swal.fire({title:'...รอสักครู่'})
+    Swal.showLoading()
+    event.preventDefault();
+    google.script.run.withSuccessHandler(function() {
+      console.log('บันทึกเรียบร้อย')
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "บันทึกข้อมูลเรียบร้อย",
+        showConfirmButton: false,
+        timer:1500
+      });
+      document.getElementById('myForm1').reset()
+      showTable()
+    }).saveData(obj);
+  }
+
+  window.submitForm2 = function(obj) {
+    Swal.fire({title:'...รอสักครู่'})
+    Swal.showLoading()
+    event.preventDefault();
+    google.script.run.withSuccessHandler(function() {
+      console.log('อัปเดตเรียบร้อย')
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "อัปเดตข้อมูลเรียบร้อย",
+        showConfirmButton: false,
+        timer:1500
+      });
+      document.getElementById('myForm2').reset()
+      // $('#staticBackdrop').modal('hide')
+      showTable()
+    }).updateData(obj);
+  }
+
+  let uid
+
+  function daleteData(){
+    Swal.fire({title:'...รอสักครู่'})
+    Swal.showLoading()
+    event.preventDefault();
+    google.script.run.withSuccessHandler(function() {
+      console.log('ลบเรียบร้อย')
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "ลบข้อมูลเรียบร้อย",
+        showConfirmButton: false,
+        timer:1500
+      });
+      document.getElementById('myForm2').reset()
+      // $('#staticBackdrop').modal('hide')
+      showTable()
+    }).delData(uid);
+  }
+
+  let updateTable = false
+  let table
+
+  function showTable(){
+    google.script.run.withSuccessHandler((res)=>{
+      // console.log(res.data);
+      // console.log(res.header);
+      const dataSet = res.data
+      const headers = res.header.map(header => {
+        return {title:header}
+      });
+
+      if(!updateTable){
+      new DataTable('#example', {
+          columns: headers,
+          data: dataSet,
+          language: {
+            url: '//cdn.datatables.net/plug-ins/2.1.7/i18n/th.json',
+          },
+          destroy: true,
+          responsive: true,
+          // order: [[0,'desc']],
+      });
+      updateTable = true;
+      }else{
+        table = $('#example').DataTable()
+        table.clear().rows.add(dataSet).draw();
+      }
+    }).getData();
+  }
+
+  window.onload = ()=>{
+    showTable()
+  }
+</script>
