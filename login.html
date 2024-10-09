@@ -1,0 +1,198 @@
+<div id="loading" class="d-flex justify-content-center  align-items-center invisible">
+  <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+  </div>
+</div>
+<section id="pageformLogin">
+
+  <div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="login">
+      <!-- <div class="w-100 d-none d-md block text-center"></div> -->
+      <center><img style="display:block;margin:auto;" src="https://s5.gifyu.com/images/SR9Rq.png" class="mb-2" width="100" height="100" style="border-radius: 100%">
+      </center>
+      <h1 class="text-center">กรอกเลขบัตรประชาชน!</h1>
+      <h5 class="text-center">เพื่อเข้าดูสถานะ</h5>
+      <form class="needs-validation" id="formLogin" onsubmit="login(this)">
+        <div class="form-group was-validated">
+          <label class="form-label" for="uname">เลขบัตรประชาชน</label>
+          <input class="form-control" type="text" id="username" placeholder="กรุณาพิมพ์เลขบัตรประชาชน" required>
+          <!-- <div class="invalid-feedback">
+                    กรุณาพิมพ์ชื่อผู้ใช้งาน
+                </div> -->
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary btn-lg w-100" id="Loadstatus1"><i class="fa-solid fa-right-to-bracket me-2"></i>ยืนยัน</button>
+          <button class="btn btn-primary btn-lg w-100" id="Loadstatus2" type="button" style="display:none;" disabled>
+                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> กรุณารอสักครู่...
+              </button>
+        </div>
+        <!-- <div class="form-group">
+                ยังไม่ได้เป็นสมาชิก?<a href="#" >ลงทะเบียน?</a>
+            </div> -->
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+  /**  LOGIN FUNCTIONS */
+    function login(obj){
+    event.preventDefault();
+    $('#Loadstatus2').show();
+    $('#Loadstatus1').hide();
+    Swal.fire({
+    position: 'center',
+    title: '<h4>กำลังตรวจสอบข้อมูล...</h4>',
+    showConfirmButton: false,
+    })
+    Swal.showLoading()
+    const cid = $("#username").val();
+          google.script.run.withSuccessHandler(function(data){
+            console.log(data)
+            localStorage.setItem('userName',data);     
+              if(data != null){ 
+                var cid = data[1];
+                var status = data[5];          
+                var role = data[6];     
+                if (role === 'admin') {
+                loadingEnd();
+                Swal.fire({
+                position: 'top',
+                icon: 'success',
+                title: '<h4>เข้าสู่ระบบสำเร็จ</h4>',
+                showConfirmButton: false,
+                timer: 2500
+                })
+                $("#formLogin")[0].reset();
+                $("#pagecontent1").show();
+                $("#pageformLogin ").hide(); 
+                $("#msg-name").html(status);
+                }else if (role === 'user'){
+                loadingEnd();
+                Swal.fire({
+                position: 'top',
+                icon: 'success',
+                title: '<h4>เข้าสู่ระบบสำเร็จ</h4>',
+                showConfirmButton: false,
+                timer: 2500
+                })
+                $("#formLogin")[0].reset();
+                $("#pagecontent").show();
+                $("#pagecontent1").hide();
+                $("#pageformLogin").hide();
+                $("#msg-name2").html(status);
+              }
+              }else{     
+                 const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                      toast.addEventListener('mouseenter', Swal.stopTimer)
+                      toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                  })
+
+                  Toast.fire({
+                    icon: 'error',
+                    title: 'ไม่พบข้อมูล!!'
+                  })
+              $('#formLogin')[0].reset();
+              $('#Loadstatus1').show();
+              $('#Loadstatus2').hide();
+              }
+            }).checkLogin(cid);       
+      }
+
+  //Loading
+  function loadingStart(){
+    $('#loading').removeClass('invisible');
+  }
+
+  function loadingEnd(){
+    $('#loading').addClass('invisible');   
+  }
+
+   // Logout
+     function logout(){
+      Swal.fire({
+      position: 'top',
+      title: 'คุณต้องการออกจากระบบ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'blue',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonText: 'ตกลง'
+    }).then((result) => {
+  if (result.isConfirmed)  {
+      $("#pageformLogin").show();   
+      $("#pagecontent").hide();
+      $("#pagecontent1").hide();
+      $("#pagecontent2").hide();
+      $('#formLogin')[0].reset();
+      $('#Loadstatus1').show();
+      $('#Loadstatus2').hide();
+      localStorage.removeItem('userName');
+      }    
+      })   
+    }
+  
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@300&family=Prompt:wght@300;400;500;600&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: 'IBM Plex Sans Thai Looped', sans-serif;
+    font-family: 'Prompt', sans-serif;
+  }
+
+  #loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 255);
+    height: 100vh;
+    width: 100vw;
+  }
+
+  body {
+    height: 100vh;
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
+    background: #F3F7FF;
+  }
+
+  .login {
+    width: 360px;
+    height: min-content;
+    padding: 20px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #BFBFBF;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .login h1 {
+    font-size: 36px;
+    margin-bottom: 25px;
+  }
+
+  .login form {
+    font-size: 20px;
+  }
+
+  .login form .form-group {
+    margin-bottom: 12px;
+  }
+
+  .login form input[type="submit"] {
+    font-size: 20px;
+    margin-top: 15px;
+  }
+</style>
