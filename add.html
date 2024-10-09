@@ -1,0 +1,45 @@
+<div id="form1" class="mt-2">
+      <h2 class="text-primary text-center">ฟอร์มเพิ่มข้อมูล</h2>
+
+      <form class="row g-3 p-3 " id="myForm1" onsubmit="submitForm1(this)">
+        <div class="col-md-6">
+          <label for="input1" class="form-label">บัตรประชาชน</label>
+          <input type="text" class="form-control" id="cid" name="cid" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="input1" class="form-label">ชื่อ-สกุล</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="input4" class="form-label">เบอร์โทร</label>
+          <input type="text" class="form-control" id="phone" name="phone" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="input3" class="form-label">วันที่ส่งคำขอ</label>
+          <input type="date" class="form-control" id="date" name="date" required>
+        </div>
+
+        <div class="col-md-4">
+          <label for="input7" class="form-label">สถานะ</label>
+          <select id="status" name="status" class="form-select" required style="width: 300px;">
+          <option selected disabled value="">เลือก</option>
+          <option value="เสนอหัวหน้าแผนกทะเบียน อนุมัติเอกสาร">เสนอหัวหน้าแผนกทะเบียน อนุมัติเอกสาร</option>
+          <option value="เสนอ ผอ.รพ. อนุมัติเอกสาร">เสนอ ผอ.รพ. อนุมัติเอกสาร</option>
+          <option value="จัดทำเอกสาร">จัดทำเอกสาร</option>
+          <option value="แพทย์สรุปประวัติการรักษา">แพทย์สรุปประวัติการรักษา</option>
+          <option value="รับเอกสาร">รับเอกสาร</option>
+          </select>
+        </div>
+
+        <input type="hidden" class="form-control" id="role" name="role" value="user" required>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">เพิ่มข้อมูล</button>
+          <button type="reset" class="btn btn-warning">รีเซ็ตข้อมูล</button>
+        </div>
+      </form>
+
+    </div>
